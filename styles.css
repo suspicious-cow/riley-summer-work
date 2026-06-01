@@ -214,6 +214,49 @@ main {
   color: var(--gold-dim);
 }
 
+.card-compact {
+  padding: 0 28px 14px;
+  overflow: hidden;
+}
+
+.card-compact .title-bar {
+  background: var(--ink);
+  margin: 0 -28px 12px;
+  padding: 10px 28px 12px;
+}
+
+.card-compact .title-bar h2 {
+  margin: 0;
+  padding: 0;
+  border: none;
+  color: var(--gold-bright);
+}
+
+.card-compact .title-sub {
+  margin: 4px 0 0;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.card-compact .stat-grid {
+  gap: 14px;
+}
+
+.card-compact .stat-label {
+  margin-bottom: 2px;
+}
+
+.card-compact .stat-value {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.card-compact .stat-context {
+  margin-top: 3px;
+  font-size: 0.65rem;
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
