@@ -125,6 +125,13 @@ main {
   font-style: italic;
 }
 
+.pitch {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 70ch;
+}
+
 .reel-placeholder {
   background: var(--off-white);
   border: 2px dashed var(--line);
