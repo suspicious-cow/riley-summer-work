@@ -40,21 +40,15 @@ function sessionSummary(session, kicks) {
   };
 }
 
-function bestSessionAverage(sessions, kicks) {
-  let best = null;
-  sessions.forEach((s) => {
-    const summary = sessionSummary(s, kicks);
-    if (summary.count === 0) return;
-    if (best === null || summary.avgDistance > best.avgDistance) {
-      best = {
-        sessionId: s.id,
-        date: s.date,
-        avgDistance: summary.avgDistance,
-        count: summary.count,
-      };
-    }
-  });
-  return best;
+function allTimeStats(kicks) {
+  if (kicks.length === 0) return null;
+  const dists = kicks.map((k) => k.distance);
+  const sessionIds = new Set(kicks.map((k) => k.sessionId).filter(Boolean));
+  return {
+    avgDistance: average(dists),
+    kickCount: kicks.length,
+    sessionCount: sessionIds.size,
+  };
 }
 
 function touchbackCounts(kicks) {

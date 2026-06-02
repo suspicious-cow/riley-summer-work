@@ -23,8 +23,8 @@ const liveBestEl = document.getElementById('live-best');
 
 const bestKickDistanceEl = document.getElementById('best-kick-distance');
 const bestKickHangtimeEl = document.getElementById('best-kick-hangtime');
-const bestSessionAvgEl = document.getElementById('best-session-avg');
-const bestSessionDateEl = document.getElementById('best-session-date');
+const allTimeAvgEl = document.getElementById('all-time-avg');
+const allTimeMetaEl = document.getElementById('all-time-meta');
 const i20CountEl = document.getElementById('i20-count');
 const tbCountEl = document.getElementById('tb-count');
 
@@ -167,7 +167,6 @@ function renderFormVisibility() {
 
 function renderStats() {
   const all = getAllKicks();
-  const sessions = getAllSessions();
 
   const best = bestKick(all);
   if (best) {
@@ -178,13 +177,15 @@ function renderStats() {
     bestKickHangtimeEl.textContent = 'no kicks yet';
   }
 
-  const bestSession = bestSessionAverage(sessions, all);
-  if (bestSession) {
-    bestSessionAvgEl.innerHTML = `${bestSession.avgDistance.toFixed(1)}<span class="unit">yd</span>`;
-    bestSessionDateEl.textContent = `${formatDate(bestSession.date)} · ${bestSession.count} kick${bestSession.count === 1 ? '' : 's'}`;
+  const allTime = allTimeStats(all);
+  if (allTime) {
+    allTimeAvgEl.innerHTML = `${allTime.avgDistance.toFixed(1)}<span class="unit">yd</span>`;
+    const kickWord = allTime.kickCount === 1 ? 'kick' : 'kicks';
+    const sessWord = allTime.sessionCount === 1 ? 'session' : 'sessions';
+    allTimeMetaEl.textContent = `${allTime.kickCount} ${kickWord} · ${allTime.sessionCount} ${sessWord}`;
   } else {
-    bestSessionAvgEl.innerHTML = '&mdash;';
-    bestSessionDateEl.textContent = 'no sessions yet';
+    allTimeAvgEl.innerHTML = '&mdash;';
+    allTimeMetaEl.textContent = 'no kicks yet';
   }
 
   const { touchbacks, inside20 } = touchbackCounts(all);
@@ -240,7 +241,6 @@ function renderPastSessions() {
 
   const withCounts = sessions
     .map((s) => ({ session: s, summary: sessionSummary(s, allKicks) }))
-    .filter((row) => row.summary.count > 0)
     .sort((a, b) => (b.session.finishedAt || '').localeCompare(a.session.finishedAt || ''));
 
   if (withCounts.length === 0) {
