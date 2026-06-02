@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punt Tracker &middot; Riley Naboulsi</title>
+  <meta name="description" content="Riley's punt training log. Tap in every kick, watch the numbers move.">
+  <link rel="stylesheet" href="tracker.css">
+</head>
+<body>
+  <header class="app-header">
+    <p class="eyebrow">PUNT TRACKER</p>
+    <h1>Log a Kick</h1>
+    <p class="subtitle">Every kick. Every session. The numbers don't lie.</p>
+  </header>
+
+  <main>
+    <aside class="stats-sidebar">
+      <div class="stat-card">
+        <h3>Best Punt</h3>
+        <div class="stat-primary" id="best-kick-distance">&mdash;</div>
+        <div class="stat-secondary" id="best-kick-hangtime">no kicks yet</div>
+      </div>
+
+      <div class="stat-card">
+        <h3>Best Daily Avg</h3>
+        <div class="stat-primary" id="best-day-avg">&mdash;</div>
+        <div class="stat-secondary" id="best-day-date">no sessions yet</div>
+      </div>
+
+      <div class="stat-card">
+        <h3>Inside 20 vs TB</h3>
+        <div class="ratio-row">
+          <div class="ratio-half">
+            <div class="ratio-number" id="i20-count">0</div>
+            <div class="ratio-label">Inside 20</div>
+          </div>
+          <div class="ratio-divider"></div>
+          <div class="ratio-half">
+            <div class="ratio-number ratio-bad" id="tb-count">0</div>
+            <div class="ratio-label">Touchbacks</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="primary-column">
+      <section class="card">
+        <form id="kick-form" autocomplete="off">
+          <div class="field">
+            <label for="distance">Distance <span class="unit">(yards)</span></label>
+            <input
+              type="number"
+              id="distance"
+              name="distance"
+              inputmode="decimal"
+              step="0.1"
+              min="0"
+              max="80"
+              required>
+          </div>
+
+          <div class="field">
+            <label for="hangtime">Hangtime <span class="unit">(seconds)</span></label>
+            <input
+              type="number"
+              id="hangtime"
+              name="hangtime"
+              inputmode="decimal"
+              step="0.1"
+              min="0"
+              max="10"
+              required>
+          </div>
+
+          <div class="field">
+            <label>Result</label>
+            <div class="result-picker" role="radiogroup" aria-label="Result of the kick">
+              <input type="radio" id="result-normal" name="result" value="normal" checked>
+              <label for="result-normal" class="result-option">Normal</label>
+
+              <input type="radio" id="result-inside20" name="result" value="inside20">
+              <label for="result-inside20" class="result-option result-good">Inside 20</label>
+
+              <input type="radio" id="result-touchback" name="result" value="touchback">
+              <label for="result-touchback" class="result-option result-bad">Touchback</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="notes">Notes <span class="unit">(optional)</span></label>
+            <textarea
+              id="notes"
+              name="notes"
+              rows="2"
+              placeholder="Wind, drop, direction, anything worth remembering"></textarea>
+          </div>
+
+          <button type="submit" class="save-btn">Save Kick</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Today's Kicks</h2>
+        <ul id="kick-list" class="kick-list">
+        </ul>
+        <p id="empty-state" class="empty-state">No kicks logged yet today. Get to work.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p><a href="../">&larr; Back to recruiting site</a></p>
+    <p class="muted">Riley Naboulsi &middot; #81 &middot; Conroe Tigers</p>
+  </footer>
+
+  <script src="storage.js"></script>
+  <script src="stats.js"></script>
+  <script src="tracker.js"></script>
+</body>
+</html>
