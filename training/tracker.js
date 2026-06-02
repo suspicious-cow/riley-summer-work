@@ -1,9 +1,12 @@
 const form = document.getElementById('kick-form');
 const kickList = document.getElementById('kick-list');
 const emptyState = document.getElementById('empty-state');
-const distanceInput = document.getElementById('distance');
 const hangtimeInput = document.getElementById('hangtime');
 const notesInput = document.getElementById('notes');
+const fieldError = document.getElementById('field-error');
+const editBanner = document.getElementById('edit-mode-banner');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
+const saveBtn = document.getElementById('save-btn');
 
 const bestKickDistanceEl = document.getElementById('best-kick-distance');
 const bestKickHangtimeEl = document.getElementById('best-kick-hangtime');
@@ -11,6 +14,8 @@ const bestDayAvgEl = document.getElementById('best-day-avg');
 const bestDayDateEl = document.getElementById('best-day-date');
 const i20CountEl = document.getElementById('i20-count');
 const tbCountEl = document.getElementById('tb-count');
+
+let editingKickId = null;
 
 function todayKey() {
   const now = new Date();
@@ -20,20 +25,16 @@ function todayKey() {
   return `${y}-${m}-${d}`;
 }
 
-function selectedResult() {
-  const checked = document.querySelector('input[name="result"]:checked');
-  return checked ? checked.value : 'normal';
-}
-
-function makeKick(distance, hangtime, result, notes) {
+function makeKick(hangtime, notes, fieldData) {
   return {
     id: `kick-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     date: todayKey(),
     timestamp: new Date().toISOString(),
-    distance: Number(distance),
+    distance: fieldData.distance,
     hangtime: Number(hangtime),
-    result,
+    result: fieldData.result,
     notes: notes.trim(),
+    position: fieldData,
   };
 }
 
@@ -99,11 +100,17 @@ function renderTodaysKicks() {
     .reverse()
     .forEach((kick) => {
       const li = document.createElement('li');
+      const isEditing = kick.id === editingKickId;
+      if (isEditing) li.classList.add('editing');
       li.innerHTML = `
         <div class="kick-distance">${kick.distance}<span class="unit">yd</span></div>
         <div class="kick-meta">
           <div class="kick-hangtime">${kick.hangtime.toFixed(1)} sec hang${resultBadge(kick.result)}</div>
           ${kick.notes ? `<div class="kick-notes">${escapeHtml(kick.notes)}</div>` : ''}
+        </div>
+        <div class="kick-actions">
+          <button type="button" class="kick-edit" data-kick-id="${kick.id}" aria-label="Edit kick">&#9998;</button>
+          <button type="button" class="kick-delete" data-kick-id="${kick.id}" aria-label="Delete kick">&#10005;</button>
         </div>
       `;
       kickList.appendChild(li);
@@ -115,18 +122,90 @@ function renderAll() {
   renderTodaysKicks();
 }
 
+function handleFieldChange(fieldData) {
+  if (fieldData) fieldError.hidden = true;
+}
+
+function setEditMode(kickId) {
+  editingKickId = kickId;
+  const isEditing = kickId !== null;
+  editBanner.hidden = !isEditing;
+  saveBtn.textContent = isEditing ? 'Update Kick' : 'Save Kick';
+}
+
+function startEdit(kickId) {
+  const kick = getAllKicks().find((k) => k.id === kickId);
+  if (!kick) return;
+
+  setEditMode(kickId);
+  hangtimeInput.value = kick.hangtime;
+  notesInput.value = kick.notes || '';
+  loadFieldData(kick.position || null);
+
+  fieldError.hidden = true;
+  renderTodaysKicks();
+  editBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelEdit() {
+  setEditMode(null);
+  form.reset();
+  resetLanding();
+  handleLosChange();
+  renderTodaysKicks();
+}
+
+cancelEditBtn.addEventListener('click', cancelEdit);
+
+kickList.addEventListener('click', (event) => {
+  const deleteBtn = event.target.closest('.kick-delete');
+  const editBtn = event.target.closest('.kick-edit');
+  if (deleteBtn) {
+    const kickId = deleteBtn.dataset.kickId;
+    if (editingKickId === kickId) cancelEdit();
+    deleteKick(kickId);
+    renderAll();
+    return;
+  }
+  if (editBtn) {
+    startEdit(editBtn.dataset.kickId);
+  }
+});
+
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  const kick = makeKick(
-    distanceInput.value,
-    hangtimeInput.value,
-    selectedResult(),
-    notesInput.value
-  );
-  saveKick(kick);
+  const fieldData = getFieldData();
+  if (!fieldData) {
+    fieldError.hidden = false;
+    fieldError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  if (editingKickId) {
+    const existing = getAllKicks().find((k) => k.id === editingKickId);
+    if (existing) {
+      const updated = {
+        ...existing,
+        distance: fieldData.distance,
+        hangtime: Number(hangtimeInput.value),
+        result: fieldData.result,
+        notes: notesInput.value.trim(),
+        position: fieldData,
+      };
+      updateKick(updated);
+    }
+    setEditMode(null);
+  } else {
+    const kick = makeKick(hangtimeInput.value, notesInput.value, fieldData);
+    saveKick(kick);
+  }
+
   form.reset();
-  distanceInput.focus();
+  resetLanding();
+  handleLosChange();
+  hangtimeInput.focus();
   renderAll();
 });
 
+setupField({ onChange: handleFieldChange });
 renderAll();

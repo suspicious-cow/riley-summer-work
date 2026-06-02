@@ -213,59 +213,239 @@ main {
   min-height: 64px;
 }
 
-.result-picker {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+.field-picker {
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
 }
 
-.result-picker input[type="radio"] {
+.field-error {
+  background: rgba(179, 38, 30, 0.1);
+  border: 1px solid rgba(179, 38, 30, 0.4);
+  color: var(--bad);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.los-input-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.los-label,
+.los-unit {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.los-side-toggle {
+  display: inline-flex;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.los-side-toggle input[type="radio"] {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
-.result-option {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 8px;
-  background: var(--bg);
-  border: 1.5px solid var(--line);
-  border-radius: 8px;
-  font-size: 0.85rem;
+.los-side-toggle label {
+  padding: 6px 14px;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: var(--ink-soft);
   cursor: pointer;
-  text-align: center;
-  min-height: 48px;
-  transition: all 0.15s ease;
+  color: var(--ink-soft);
+  border-right: 1.5px solid var(--line);
 }
 
-.result-picker input[type="radio"]:checked + .result-option {
+.los-side-toggle label:last-of-type { border-right: none; }
+
+.los-side-toggle input[type="radio"]:checked + label {
   background: var(--ink);
-  border-color: var(--ink);
   color: var(--gold-bright);
 }
 
-.result-picker input[type="radio"]:focus-visible + .result-option {
-  box-shadow: 0 0 0 3px rgba(200, 161, 60, 0.4);
+#los-yard {
+  width: 64px;
+  font-size: 1rem;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-weight: 700;
+  padding: 6px 10px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  text-align: center;
+  min-height: 36px;
 }
 
-.result-option.result-good { color: var(--good); }
-.result-option.result-bad { color: var(--bad); }
-
-.result-picker input[type="radio"]:checked + .result-option.result-good {
-  background: var(--good);
-  border-color: var(--good);
-  color: #fff;
+#los-yard:focus {
+  outline: none;
+  border-color: var(--gold);
 }
 
-.result-picker input[type="radio"]:checked + .result-option.result-bad {
-  background: var(--bad);
-  border-color: var(--bad);
-  color: #fff;
+.field-prompt {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--gold-dim);
+  text-align: center;
+  margin-bottom: 10px;
+  min-height: 1.2em;
+}
+
+.field-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  cursor: crosshair;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.field-of-play { fill: #f0ecdf; }
+.end-zone-own,
+.end-zone-opp { fill: #d9d3c2; }
+
+.yard-line {
+  stroke: rgba(26, 26, 26, 0.45);
+  stroke-width: 0.25;
+}
+
+.yard-line-fifty {
+  stroke: var(--ink);
+  stroke-width: 0.6;
+}
+
+.goal-line {
+  stroke: var(--ink);
+  stroke-width: 0.5;
+}
+
+.yard-number {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 3.5px;
+  font-weight: 800;
+  fill: rgba(26, 26, 26, 0.55);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.yard-number-fifty { fill: rgba(26, 26, 26, 0.85); }
+
+.hash-mark {
+  stroke: rgba(26, 26, 26, 0.55);
+  stroke-width: 0.3;
+  pointer-events: none;
+}
+
+.los-marker {
+  stroke: var(--ink);
+  stroke-width: 0.8;
+  stroke-dasharray: 1.5 1;
+  pointer-events: none;
+}
+
+.landing-marker { pointer-events: none; }
+
+.football-body {
+  fill: #7a4a1f;
+  stroke: #3d2510;
+  stroke-width: 0.2;
+}
+
+.football-stripe {
+  stroke: #f5efe2;
+  stroke-width: 0.35;
+}
+
+.football-lace {
+  stroke: #f5efe2;
+  stroke-width: 0.2;
+}
+
+.landing-group:not(.placed) .football-body,
+.landing-group:not(.placed) .football-stripe,
+.landing-group:not(.placed) .football-lace {
+  opacity: 0.45;
+}
+
+.landing-touch {
+  fill: transparent;
+  cursor: grab;
+  pointer-events: all;
+  touch-action: none;
+}
+
+.landing-touch.dragging { cursor: grabbing; }
+.landing-group.dragging .football-body { stroke-width: 0.35; }
+
+.punter-marker {
+  fill: var(--ink);
+  stroke: var(--gold-bright);
+  stroke-width: 0.4;
+  pointer-events: none;
+}
+
+.punt-arrow {
+  stroke: var(--gold-dim);
+  stroke-width: 0.6;
+  stroke-dasharray: 1 0.6;
+  pointer-events: none;
+}
+
+.field-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  min-height: 28px;
+}
+
+.field-summary {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+.field-reset {
+  background: transparent;
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.field-reset:hover {
+  border-color: var(--gold);
+  color: var(--gold-dim);
 }
 
 .save-btn {
@@ -294,12 +474,20 @@ main {
 .kick-list li {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 12px 0;
   border-bottom: 1px solid var(--line);
 }
 
 .kick-list li:last-child { border-bottom: none; }
+
+.kick-list li.editing {
+  background: rgba(200, 161, 60, 0.08);
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 6px;
+}
 
 .kick-distance {
   font-family: "SF Mono", Menlo, Consolas, monospace;
@@ -357,6 +545,77 @@ main {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.kick-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.kick-edit,
+.kick-delete {
+  background: transparent;
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.kick-edit:hover {
+  border-color: var(--gold);
+  color: var(--gold-dim);
+}
+
+.kick-delete:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.edit-mode-banner[hidden] {
+  display: none;
+}
+
+.edit-mode-banner {
+  background: rgba(200, 161, 60, 0.12);
+  border: 1px solid var(--gold);
+  color: var(--gold-dim);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1.5px solid var(--gold-dim);
+  color: var(--gold-dim);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background: var(--gold-dim);
+  color: #fff;
 }
 
 .empty-state {

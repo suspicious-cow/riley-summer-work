@@ -48,19 +48,6 @@
       <section class="card">
         <form id="kick-form" autocomplete="off">
           <div class="field">
-            <label for="distance">Distance <span class="unit">(yards)</span></label>
-            <input
-              type="number"
-              id="distance"
-              name="distance"
-              inputmode="decimal"
-              step="0.1"
-              min="0"
-              max="80"
-              required>
-          </div>
-
-          <div class="field">
             <label for="hangtime">Hangtime <span class="unit">(seconds)</span></label>
             <input
               type="number"
@@ -74,16 +61,91 @@
           </div>
 
           <div class="field">
-            <label>Result</label>
-            <div class="result-picker" role="radiogroup" aria-label="Result of the kick">
-              <input type="radio" id="result-normal" name="result" value="normal" checked>
-              <label for="result-normal" class="result-option">Normal</label>
+            <label>Where it landed</label>
+            <div class="field-picker">
+              <p id="field-error" class="field-error" hidden>Drag the football to where your punt landed before saving.</p>
+              <div class="los-input-row">
+                <span class="los-label">From</span>
+                <div class="los-side-toggle" role="radiogroup" aria-label="LOS side">
+                  <input type="radio" id="los-side-own" name="los-side" value="own" checked>
+                  <label for="los-side-own">Own</label>
+                  <input type="radio" id="los-side-opp" name="los-side" value="opp">
+                  <label for="los-side-opp">Opp</label>
+                </div>
+                <input type="number" id="los-yard" min="1" max="50" value="35" inputmode="numeric" aria-label="LOS yard line">
+                <span class="los-unit">yd line</span>
+              </div>
 
-              <input type="radio" id="result-inside20" name="result" value="inside20">
-              <label for="result-inside20" class="result-option result-good">Inside 20</label>
+              <p id="field-prompt" class="field-prompt">LOS at Own 35 &middot; tap where it landed</p>
+              <svg id="field-svg" viewBox="0 0 120 53" class="field-svg" preserveAspectRatio="xMidYMid meet">
+                <rect x="0" y="0" width="10" height="53" class="end-zone end-zone-own" />
+                <rect x="110" y="0" width="10" height="53" class="end-zone end-zone-opp" />
+                <rect x="10" y="0" width="100" height="53" class="field-of-play" />
 
-              <input type="radio" id="result-touchback" name="result" value="touchback">
-              <label for="result-touchback" class="result-option result-bad">Touchback</label>
+                <line x1="15" y1="0" x2="15" y2="53" class="yard-line" />
+                <line x1="20" y1="0" x2="20" y2="53" class="yard-line" />
+                <line x1="25" y1="0" x2="25" y2="53" class="yard-line" />
+                <line x1="30" y1="0" x2="30" y2="53" class="yard-line" />
+                <line x1="35" y1="0" x2="35" y2="53" class="yard-line" />
+                <line x1="40" y1="0" x2="40" y2="53" class="yard-line" />
+                <line x1="45" y1="0" x2="45" y2="53" class="yard-line" />
+                <line x1="50" y1="0" x2="50" y2="53" class="yard-line" />
+                <line x1="55" y1="0" x2="55" y2="53" class="yard-line" />
+                <line x1="60" y1="0" x2="60" y2="53" class="yard-line yard-line-fifty" />
+                <line x1="65" y1="0" x2="65" y2="53" class="yard-line" />
+                <line x1="70" y1="0" x2="70" y2="53" class="yard-line" />
+                <line x1="75" y1="0" x2="75" y2="53" class="yard-line" />
+                <line x1="80" y1="0" x2="80" y2="53" class="yard-line" />
+                <line x1="85" y1="0" x2="85" y2="53" class="yard-line" />
+                <line x1="90" y1="0" x2="90" y2="53" class="yard-line" />
+                <line x1="95" y1="0" x2="95" y2="53" class="yard-line" />
+                <line x1="100" y1="0" x2="100" y2="53" class="yard-line" />
+                <line x1="105" y1="0" x2="105" y2="53" class="yard-line" />
+
+                <line x1="10" y1="0" x2="10" y2="53" class="goal-line" />
+                <line x1="110" y1="0" x2="110" y2="53" class="goal-line" />
+
+                <g id="hash-marks"></g>
+
+                <text x="20" y="11" class="yard-number">10</text>
+                <text x="30" y="11" class="yard-number">20</text>
+                <text x="40" y="11" class="yard-number">30</text>
+                <text x="50" y="11" class="yard-number">40</text>
+                <text x="60" y="11" class="yard-number yard-number-fifty">50</text>
+                <text x="70" y="11" class="yard-number">40</text>
+                <text x="80" y="11" class="yard-number">30</text>
+                <text x="90" y="11" class="yard-number">20</text>
+                <text x="100" y="11" class="yard-number">10</text>
+
+                <text x="20" y="47" class="yard-number">10</text>
+                <text x="30" y="47" class="yard-number">20</text>
+                <text x="40" y="47" class="yard-number">30</text>
+                <text x="50" y="47" class="yard-number">40</text>
+                <text x="60" y="47" class="yard-number yard-number-fifty">50</text>
+                <text x="70" y="47" class="yard-number">40</text>
+                <text x="80" y="47" class="yard-number">30</text>
+                <text x="90" y="47" class="yard-number">20</text>
+                <text x="100" y="47" class="yard-number">10</text>
+
+                <line id="punt-arrow" class="punt-arrow" x1="0" y1="0" x2="0" y2="0" hidden></line>
+                <line id="los-marker" class="los-marker" x1="0" y1="0" x2="0" y2="53"></line>
+                <circle id="punter-marker" class="punter-marker" cx="0" cy="26.5" r="1.5"></circle>
+                <g id="landing-group" hidden>
+                  <g id="landing-marker" class="landing-marker">
+                    <ellipse class="football-body" cx="0" cy="0" rx="2.6" ry="1.4"></ellipse>
+                    <line class="football-stripe" x1="-1.7" y1="0" x2="1.7" y2="0"></line>
+                    <line class="football-lace" x1="-0.7" y1="-0.35" x2="-0.7" y2="0.35"></line>
+                    <line class="football-lace" x1="-0.25" y1="-0.35" x2="-0.25" y2="0.35"></line>
+                    <line class="football-lace" x1="0.2" y1="-0.35" x2="0.2" y2="0.35"></line>
+                    <line class="football-lace" x1="0.65" y1="-0.35" x2="0.65" y2="0.35"></line>
+                  </g>
+                  <circle id="landing-touch" class="landing-touch" cx="0" cy="0" r="6"></circle>
+                </g>
+              </svg>
+              <div class="field-controls">
+                <p id="field-summary" class="field-summary"></p>
+                <button type="button" id="field-reset" class="field-reset" hidden>Reset Landing</button>
+              </div>
             </div>
           </div>
 
@@ -96,7 +158,12 @@
               placeholder="Wind, drop, direction, anything worth remembering"></textarea>
           </div>
 
-          <button type="submit" class="save-btn">Save Kick</button>
+          <div id="edit-mode-banner" class="edit-mode-banner" hidden>
+            <span>Editing existing kick</span>
+            <button type="button" id="cancel-edit-btn" class="cancel-btn">Cancel</button>
+          </div>
+
+          <button type="submit" class="save-btn" id="save-btn">Save Kick</button>
         </form>
       </section>
 
@@ -116,6 +183,7 @@
 
   <script src="storage.js"></script>
   <script src="stats.js"></script>
+  <script src="field.js"></script>
   <script src="tracker.js"></script>
 </body>
 </html>

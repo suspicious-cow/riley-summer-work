@@ -18,3 +18,17 @@ function saveKick(kick) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   return updated;
 }
+
+function updateKick(updatedKick) {
+  const existing = getAllKicks();
+  const updated = existing.map((k) => (k.id === updatedKick.id ? updatedKick : k));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  return updated;
+}
+
+function deleteKick(kickId) {
+  const existing = getAllKicks();
+  const updated = existing.filter((k) => k.id !== kickId);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  return updated;
+}
