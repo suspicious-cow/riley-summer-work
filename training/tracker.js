@@ -308,7 +308,7 @@ function renderAll() {
   renderStats();
   renderActiveKicks();
   renderPastSessions();
-  renderDistanceChart();
+  renderTrendCharts();
 }
 
 function handleFieldChange(fieldData) {

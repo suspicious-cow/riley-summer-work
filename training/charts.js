@@ -1,4 +1,5 @@
 let distanceChart = null;
+let hangtimeChart = null;
 
 function chartDatasetFromSessions() {
   const sessions = getAllSessions().filter((s) => s.finishedAt !== null);
@@ -16,22 +17,22 @@ function chartLabel(session) {
   return `${Number(m)}/${Number(d)}`;
 }
 
-function buildDistanceChartConfig(labels, distances) {
+function buildChartConfig(labels, values, axisLabel, unit, color, fillColor) {
   return {
     type: 'line',
     data: {
       labels,
       datasets: [
         {
-          label: 'Avg Distance',
-          data: distances,
-          borderColor: '#c8a13c',
-          backgroundColor: 'rgba(200, 161, 60, 0.18)',
+          label: axisLabel,
+          data: values,
+          borderColor: color,
+          backgroundColor: fillColor,
           borderWidth: 2.5,
           tension: 0.3,
           fill: true,
           pointBackgroundColor: '#1a1a1a',
-          pointBorderColor: '#c8a13c',
+          pointBorderColor: color,
           pointBorderWidth: 2,
           pointRadius: 5,
           pointHoverRadius: 7,
@@ -49,13 +50,13 @@ function buildDistanceChartConfig(labels, distances) {
           bodyColor: '#ffffff',
           padding: 10,
           callbacks: {
-            label: (ctx) => `${ctx.parsed.y} yd avg`,
+            label: (ctx) => `${ctx.parsed.y} ${unit}`,
           },
         },
       },
       scales: {
         y: {
-          title: { display: true, text: 'Avg distance (yd)', font: { size: 11, weight: 'bold' } },
+          title: { display: true, text: `${axisLabel} (${unit})`, font: { size: 11, weight: 'bold' } },
           beginAtZero: false,
           grid: { color: 'rgba(0,0,0,0.06)' },
           ticks: {
@@ -73,14 +74,14 @@ function buildDistanceChartConfig(labels, distances) {
   };
 }
 
-function renderDistanceChart() {
-  const canvas = document.getElementById('distance-chart');
-  const emptyMsg = document.getElementById('distance-chart-empty');
+function renderTrendChart(opts) {
+  const canvas = document.getElementById(opts.canvasId);
+  const emptyMsg = document.getElementById(opts.emptyId);
   if (!canvas || !emptyMsg) return;
 
   const data = chartDatasetFromSessions();
   const labels = data.map(({ session }) => chartLabel(session));
-  const distances = data.map(({ summary }) => Number(summary.avgDistance.toFixed(1)));
+  const values = data.map(({ summary }) => Number(opts.valueGetter(summary)));
 
   if (data.length < 2) {
     canvas.hidden = true;
@@ -88,9 +89,9 @@ function renderDistanceChart() {
     emptyMsg.textContent = data.length === 0
       ? 'Finish a session to start tracking your trend.'
       : 'One more session — the trend line needs at least 2 finished sessions.';
-    if (distanceChart) {
-      distanceChart.destroy();
-      distanceChart = null;
+    if (opts.getInstance()) {
+      opts.getInstance().destroy();
+      opts.setInstance(null);
     }
     return;
   }
@@ -98,13 +99,51 @@ function renderDistanceChart() {
   canvas.hidden = false;
   emptyMsg.hidden = true;
 
-  if (distanceChart) {
-    distanceChart.data.labels = labels;
-    distanceChart.data.datasets[0].data = distances;
-    distanceChart.update();
+  const existing = opts.getInstance();
+  if (existing) {
+    existing.data.labels = labels;
+    existing.data.datasets[0].data = values;
+    existing.update();
     return;
   }
 
   if (typeof Chart === 'undefined') return;
-  distanceChart = new Chart(canvas, buildDistanceChartConfig(labels, distances));
+  const chart = new Chart(
+    canvas,
+    buildChartConfig(labels, values, opts.axisLabel, opts.unit, opts.color, opts.fillColor)
+  );
+  opts.setInstance(chart);
+}
+
+function renderDistanceChart() {
+  renderTrendChart({
+    canvasId: 'distance-chart',
+    emptyId: 'distance-chart-empty',
+    getInstance: () => distanceChart,
+    setInstance: (c) => { distanceChart = c; },
+    valueGetter: (summary) => summary.avgDistance.toFixed(1),
+    axisLabel: 'Avg Distance',
+    unit: 'yd',
+    color: '#c8a13c',
+    fillColor: 'rgba(200, 161, 60, 0.18)',
+  });
+}
+
+function renderHangtimeChart() {
+  renderTrendChart({
+    canvasId: 'hangtime-chart',
+    emptyId: 'hangtime-chart-empty',
+    getInstance: () => hangtimeChart,
+    setInstance: (c) => { hangtimeChart = c; },
+    valueGetter: (summary) => summary.avgHangtime.toFixed(2),
+    axisLabel: 'Avg Hangtime',
+    unit: 'sec',
+    color: '#2e7d32',
+    fillColor: 'rgba(46, 125, 50, 0.15)',
+  });
+}
+
+function renderTrendCharts() {
+  renderDistanceChart();
+  renderHangtimeChart();
 }
