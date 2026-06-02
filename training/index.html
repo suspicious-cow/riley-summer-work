@@ -82,6 +82,15 @@
         <form id="kick-form" autocomplete="off">
           <div class="field">
             <label for="hangtime">Hangtime <span class="unit">(seconds)</span></label>
+            <div class="stopwatch">
+              <button type="button" id="stopwatch-btn" class="stopwatch-btn" data-state="idle">Tap When Ball Is Kicked</button>
+              <div class="stopwatch-display-row">
+                <span id="stopwatch-display" class="stopwatch-display">0.00</span>
+                <span class="stopwatch-unit">sec</span>
+                <button type="button" id="stopwatch-reset" class="stopwatch-reset" hidden>Reset</button>
+              </div>
+              <p id="stopwatch-help" class="stopwatch-help">Use the stopwatch or type the number below.</p>
+            </div>
             <input
               type="number"
               id="hangtime"
@@ -224,6 +233,7 @@
   <script src="storage.js"></script>
   <script src="stats.js"></script>
   <script src="field.js"></script>
+  <script src="stopwatch.js"></script>
   <script src="tracker.js"></script>
 </body>
 </html>

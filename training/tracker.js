@@ -308,6 +308,10 @@ function handleFieldChange(fieldData) {
   if (fieldData) fieldError.hidden = true;
 }
 
+function handleStopwatchMeasured(seconds) {
+  hangtimeInput.value = seconds.toFixed(2);
+}
+
 function setEditMode(kickId) {
   editingKickId = kickId;
   const isEditing = kickId !== null;
@@ -427,4 +431,5 @@ form.addEventListener('submit', (event) => {
 });
 
 setupField({ onChange: handleFieldChange });
+setupStopwatch({ onMeasured: handleStopwatchMeasured });
 renderAll();
