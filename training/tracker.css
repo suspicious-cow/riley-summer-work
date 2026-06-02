@@ -647,6 +647,30 @@ main {
   color: var(--bad);
 }
 
+.pb-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  vertical-align: middle;
+  border: 1px solid transparent;
+}
+
+.pb-badge.pb-distance {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold-dim);
+}
+
+.pb-badge.pb-hangtime {
+  background: #2e7d32;
+  color: #ffffff;
+  border-color: #1b5e20;
+}
+
 .kick-field-summary {
   font-family: "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.78rem;

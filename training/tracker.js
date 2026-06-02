@@ -33,6 +33,7 @@ const sessionsEmpty = document.getElementById('sessions-empty');
 
 let editingKickId = null;
 let expandedSessionId = null;
+let personalBests = {};
 
 function todayKey() {
   const now = new Date();
@@ -86,12 +87,22 @@ function kickFieldSummary(kick) {
   return `${formatYardLine(losYL)} &rarr; ${formatYardLine(landYL)} &middot; ${hashLabel(kick.position.landing.hash)}`;
 }
 
+function pbBadgeHtml(kickId) {
+  const pb = personalBests[kickId];
+  if (!pb) return '';
+  let html = '';
+  if (pb.distance) html += '<span class="pb-badge pb-distance" title="Personal best distance">PB DIST</span>';
+  if (pb.hangtime) html += '<span class="pb-badge pb-hangtime" title="Personal best hangtime">PB HANG</span>';
+  return html;
+}
+
 function kickRowHtml(kick) {
   const fieldSummary = kickFieldSummary(kick);
+  const pbHtml = pbBadgeHtml(kick.id);
   return `
     <div class="kick-distance">${kick.distance}<span class="unit">yd</span></div>
     <div class="kick-meta">
-      <div class="kick-hangtime">${kick.hangtime.toFixed(1)} sec hang${resultBadge(kick.result)}</div>
+      <div class="kick-hangtime">${kick.hangtime.toFixed(1)} sec hang${resultBadge(kick.result)}${pbHtml}</div>
       ${fieldSummary ? `<div class="kick-field-summary">${fieldSummary}</div>` : ''}
       ${kick.notes ? `<div class="kick-notes">${escapeHtml(kick.notes)}</div>` : ''}
     </div>
@@ -303,6 +314,7 @@ function renderPastSessions() {
 }
 
 function renderAll() {
+  personalBests = computePersonalBests(getAllKicks());
   renderSessionControl();
   renderFormVisibility();
   renderStats();

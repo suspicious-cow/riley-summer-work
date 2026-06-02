@@ -60,3 +60,33 @@ function touchbackCounts(kicks) {
   });
   return { touchbacks, inside20 };
 }
+
+function computePersonalBests(kicks) {
+  let bestDistKick = null;
+  let bestHangKick = null;
+  let maxDistance = -Infinity;
+  let maxHangtime = -Infinity;
+
+  kicks.forEach((k) => {
+    const dist = Number(k.distance);
+    const hang = Number(k.hangtime);
+    if (Number.isFinite(dist) && dist > maxDistance) {
+      maxDistance = dist;
+      bestDistKick = k;
+    }
+    if (Number.isFinite(hang) && hang > maxHangtime) {
+      maxHangtime = hang;
+      bestHangKick = k;
+    }
+  });
+
+  const pbs = {};
+  if (bestDistKick) {
+    pbs[bestDistKick.id] = { distance: true, hangtime: false };
+  }
+  if (bestHangKick) {
+    if (!pbs[bestHangKick.id]) pbs[bestHangKick.id] = { distance: false, hangtime: false };
+    pbs[bestHangKick.id].hangtime = true;
+  }
+  return pbs;
+}
