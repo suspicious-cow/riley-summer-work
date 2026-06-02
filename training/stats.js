@@ -3,29 +3,55 @@ function bestKick(kicks) {
   return kicks.reduce((best, k) => (k.distance > best.distance ? k : best), kicks[0]);
 }
 
-function groupByDate(kicks) {
-  const groups = {};
-  kicks.forEach((k) => {
-    if (!groups[k.date]) groups[k.date] = [];
-    groups[k.date].push(k);
-  });
-  return groups;
-}
-
 function average(numbers) {
   if (numbers.length === 0) return 0;
-  const sum = numbers.reduce((total, n) => total + n, 0);
-  return sum / numbers.length;
+  return numbers.reduce((s, n) => s + n, 0) / numbers.length;
 }
 
-function bestDailyAverage(kicks) {
-  if (kicks.length === 0) return null;
-  const groups = groupByDate(kicks);
+function standardDeviation(numbers) {
+  if (numbers.length < 2) return 0;
+  const avg = average(numbers);
+  const squaredDiffs = numbers.map((n) => (n - avg) ** 2);
+  const variance = squaredDiffs.reduce((s, d) => s + d, 0) / numbers.length;
+  return Math.sqrt(variance);
+}
+
+function sessionSummary(session, kicks) {
+  const sessionKicks = kicks.filter((k) => k.sessionId === session.id);
+  if (sessionKicks.length === 0) {
+    return {
+      count: 0,
+      avgDistance: 0,
+      avgHangtime: 0,
+      bestDistance: 0,
+      bestHangtime: 0,
+      stdDevDistance: 0,
+    };
+  }
+  const distances = sessionKicks.map((k) => k.distance);
+  const hangtimes = sessionKicks.map((k) => k.hangtime);
+  return {
+    count: sessionKicks.length,
+    avgDistance: average(distances),
+    avgHangtime: average(hangtimes),
+    bestDistance: Math.max(...distances),
+    bestHangtime: Math.max(...hangtimes),
+    stdDevDistance: standardDeviation(distances),
+  };
+}
+
+function bestSessionAverage(sessions, kicks) {
   let best = null;
-  Object.entries(groups).forEach(([date, dayKicks]) => {
-    const avg = average(dayKicks.map((k) => k.distance));
-    if (best === null || avg > best.average) {
-      best = { date, average: avg, count: dayKicks.length };
+  sessions.forEach((s) => {
+    const summary = sessionSummary(s, kicks);
+    if (summary.count === 0) return;
+    if (best === null || summary.avgDistance > best.avgDistance) {
+      best = {
+        sessionId: s.id,
+        date: s.date,
+        avgDistance: summary.avgDistance,
+        count: summary.count,
+      };
     }
   });
   return best;

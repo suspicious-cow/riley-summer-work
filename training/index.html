@@ -23,9 +23,9 @@
       </div>
 
       <div class="stat-card">
-        <h3>Best Daily Avg</h3>
-        <div class="stat-primary" id="best-day-avg">&mdash;</div>
-        <div class="stat-secondary" id="best-day-date">no sessions yet</div>
+        <h3>Best Session Avg</h3>
+        <div class="stat-primary" id="best-session-avg">&mdash;</div>
+        <div class="stat-secondary" id="best-session-date">no sessions yet</div>
       </div>
 
       <div class="stat-card">
@@ -45,7 +45,40 @@
     </aside>
 
     <div class="primary-column">
-      <section class="card">
+      <section class="card session-control-card" id="session-control-card">
+        <div id="session-inactive" class="session-state">
+          <div class="session-prompt">Ready to punt? Hit Start to log this practice.</div>
+          <button type="button" id="start-session-btn" class="primary-btn">Start Session</button>
+          <div id="last-session-preview" class="last-session-preview" hidden></div>
+        </div>
+        <div id="session-active" class="session-state" hidden>
+          <div class="active-session-header">
+            <span class="active-pill">LIVE</span>
+            <span id="active-session-time">Started &mdash;</span>
+          </div>
+          <div class="active-session-stats">
+            <div class="session-stat">
+              <div class="session-stat-num" id="live-count">0</div>
+              <div class="session-stat-label">Kicks</div>
+            </div>
+            <div class="session-stat">
+              <div class="session-stat-num" id="live-avg-dist">&mdash;</div>
+              <div class="session-stat-label">Avg Dist</div>
+            </div>
+            <div class="session-stat">
+              <div class="session-stat-num" id="live-avg-hang">&mdash;</div>
+              <div class="session-stat-label">Avg Hang</div>
+            </div>
+            <div class="session-stat">
+              <div class="session-stat-num" id="live-best">&mdash;</div>
+              <div class="session-stat-label">Best</div>
+            </div>
+          </div>
+          <button type="button" id="finish-session-btn" class="secondary-btn">Finish Session</button>
+        </div>
+      </section>
+
+      <section class="card" id="form-card">
         <form id="kick-form" autocomplete="off">
           <div class="field">
             <label for="hangtime">Hangtime <span class="unit">(seconds)</span></label>
@@ -167,11 +200,18 @@
         </form>
       </section>
 
-      <section class="card">
-        <h2>Today's Kicks</h2>
+      <section class="card" id="active-kicks-card">
+        <h2>This Session</h2>
         <ul id="kick-list" class="kick-list">
         </ul>
-        <p id="empty-state" class="empty-state">No kicks logged yet today. Get to work.</p>
+        <p id="empty-state" class="empty-state">No kicks yet &mdash; drag the football to log your first.</p>
+      </section>
+
+      <section class="card" id="past-sessions-card">
+        <h2>Past Sessions</h2>
+        <ul id="session-list" class="session-list">
+        </ul>
+        <p id="sessions-empty" class="empty-state">No past sessions yet. Finish one to see it here.</p>
       </section>
     </div>
   </main>

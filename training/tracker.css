@@ -538,6 +538,15 @@ main {
   color: var(--bad);
 }
 
+.kick-field-summary {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-top: 3px;
+  letter-spacing: 0.01em;
+}
+
 .kick-notes {
   font-size: 0.85rem;
   color: var(--muted);
@@ -650,6 +659,290 @@ footer a:hover { color: var(--gold); text-decoration: underline; }
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
+
+.session-control-card {
+  border-top: 4px solid var(--gold);
+}
+
+.session-state { display: block; }
+.session-state[hidden] { display: none; }
+
+.session-prompt {
+  font-size: 1rem;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+.primary-btn {
+  width: 100%;
+  background: var(--ink);
+  color: var(--gold-bright);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 58px;
+  transition: background 0.15s ease;
+}
+
+.primary-btn:hover { background: var(--ink-soft); }
+.primary-btn:active { background: #000; }
+
+.secondary-btn {
+  width: 100%;
+  background: transparent;
+  color: var(--ink-soft);
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 48px;
+  margin-top: 14px;
+  transition: all 0.15s ease;
+}
+
+.secondary-btn:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.last-session-preview {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.last-session-preview[hidden] { display: none; }
+
+.last-session-preview .prev-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  font-weight: 700;
+}
+
+.last-session-preview .prev-value {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.active-session-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.active-pill {
+  background: var(--good);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.active-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: livePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+#active-session-time {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+.active-session-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 6px;
+}
+
+.session-stat { text-align: center; }
+
+.session-stat-num {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.session-stat-num .unit {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 2px;
+}
+
+.session-stat-label {
+  margin-top: 4px;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--gold-dim);
+}
+
+.session-list { list-style: none; }
+
+.session-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.session-row:last-child { border-bottom: none; }
+
+.session-row-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  font: inherit;
+}
+
+.session-row-toggle:focus { outline: none; }
+.session-row-toggle:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.session-row-toggle:hover .session-row-date { color: var(--gold-dim); }
+
+.session-row-header {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.session-row-time {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-left: 6px;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+.session-row-chevron {
+  font-size: 1.2rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.session-row.expanded .session-row-chevron { color: var(--gold); }
+
+.session-kicks {
+  list-style: none;
+  margin-top: 12px;
+  padding: 12px 0 0;
+  border-top: 1px dashed var(--line);
+}
+
+.session-kicks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.session-kicks li:last-child { border-bottom: none; }
+
+.session-kicks li.editing {
+  background: rgba(200, 161, 60, 0.08);
+  margin: 0 -8px;
+  padding: 10px 8px;
+  border-radius: 6px;
+}
+
+.session-row-date {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.session-row-stats {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.session-row-stats .srs-pri {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.session-row-stats .srs-sep {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.session-row-stats .unit {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 2px;
+}
+
+#form-card[hidden],
+#active-kicks-card[hidden],
+#past-sessions-card[hidden] { display: none; }
 
 @media (min-width: 720px) {
   main {

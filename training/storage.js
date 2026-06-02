@@ -1,34 +1,120 @@
 const STORAGE_KEY = 'riley-punt-tracker-kicks-v1';
+const SESSIONS_KEY = 'riley-punt-tracker-sessions-v1';
 
-function getAllKicks() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return [];
+function safeParse(key) {
+  const raw = localStorage.getItem(key);
+  if (!raw) return null;
   try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return JSON.parse(raw);
   } catch (err) {
-    console.error('Corrupted storage, starting fresh:', err);
-    return [];
+    console.error(`Corrupted storage at ${key}:`, err);
+    return null;
   }
 }
 
+function getAllKicks() {
+  const parsed = safeParse(STORAGE_KEY);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function getAllSessions() {
+  const parsed = safeParse(SESSIONS_KEY);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function writeKicks(kicks) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(kicks));
+  return kicks;
+}
+
+function writeSessions(sessions) {
+  localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+  return sessions;
+}
+
+function migrateIfNeeded() {
+  if (localStorage.getItem(SESSIONS_KEY) !== null) return;
+
+  const kicks = getAllKicks();
+  if (kicks.length === 0) {
+    writeSessions([]);
+    return;
+  }
+
+  const byDate = {};
+  kicks.forEach((k) => {
+    const date = k.date || 'unknown';
+    if (!byDate[date]) byDate[date] = [];
+    byDate[date].push(k);
+  });
+
+  const sessions = [];
+  const migratedKicks = [];
+  Object.entries(byDate).forEach(([date, dayKicks]) => {
+    const sorted = dayKicks.slice().sort((a, b) =>
+      (a.timestamp || '').localeCompare(b.timestamp || '')
+    );
+    const sessionId = `session-migrated-${date}-${Math.random().toString(36).slice(2, 8)}`;
+    sessions.push({
+      id: sessionId,
+      date,
+      startedAt: sorted[0].timestamp || `${date}T00:00:00.000Z`,
+      finishedAt: sorted[sorted.length - 1].timestamp || `${date}T00:00:00.000Z`,
+    });
+    sorted.forEach((k) => {
+      migratedKicks.push({ ...k, sessionId });
+    });
+  });
+
+  writeKicks(migratedKicks);
+  writeSessions(sessions);
+}
+
+function getActiveSession() {
+  return getAllSessions().find((s) => s.finishedAt === null) || null;
+}
+
+function getSessionById(sessionId) {
+  return getAllSessions().find((s) => s.id === sessionId) || null;
+}
+
+function startSession(date, startedAt) {
+  const existing = getActiveSession();
+  if (existing) return existing;
+  const session = {
+    id: `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    date,
+    startedAt,
+    finishedAt: null,
+  };
+  writeSessions([...getAllSessions(), session]);
+  return session;
+}
+
+function finishSession(sessionId, finishedAt) {
+  const sessions = getAllSessions();
+  const updated = sessions.map((s) =>
+    s.id === sessionId ? { ...s, finishedAt } : s
+  );
+  writeSessions(updated);
+  return updated.find((s) => s.id === sessionId);
+}
+
+function getKicksForSession(sessionId) {
+  return getAllKicks().filter((k) => k.sessionId === sessionId);
+}
+
 function saveKick(kick) {
-  const existing = getAllKicks();
-  const updated = [...existing, kick];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  return updated;
+  return writeKicks([...getAllKicks(), kick]);
 }
 
 function updateKick(updatedKick) {
   const existing = getAllKicks();
-  const updated = existing.map((k) => (k.id === updatedKick.id ? updatedKick : k));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  return updated;
+  return writeKicks(existing.map((k) => (k.id === updatedKick.id ? updatedKick : k)));
 }
 
 function deleteKick(kickId) {
-  const existing = getAllKicks();
-  const updated = existing.filter((k) => k.id !== kickId);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  return updated;
+  return writeKicks(getAllKicks().filter((k) => k.id !== kickId));
 }
+
+migrateIfNeeded();
