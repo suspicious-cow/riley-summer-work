@@ -1126,6 +1126,46 @@ footer a:hover { color: var(--gold); text-decoration: underline; }
 #active-kicks-card[hidden],
 #past-sessions-card[hidden] { display: none; }
 
+.data-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.data-btn {
+  flex: 1;
+  background: transparent;
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.data-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold-dim);
+}
+
+.data-btn-label { margin: 0; }
+
+.data-btn input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (min-width: 720px) {
   main {
     grid-template-columns: 240px 1fr;

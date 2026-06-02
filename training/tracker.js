@@ -331,6 +331,69 @@ function handleStopwatchMeasured(seconds) {
   hangtimeInput.value = seconds.toFixed(2);
 }
 
+function downloadJson(filename, data) {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportAllData() {
+  const payload = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    sessions: getAllSessions(),
+    kicks: getAllKicks(),
+  };
+  const datePart = new Date().toISOString().slice(0, 10);
+  downloadJson(`punt-tracker-backup-${datePart}.json`, payload);
+}
+
+function importAllData(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let data;
+    try {
+      data = JSON.parse(e.target.result);
+    } catch (err) {
+      alert('That file is not valid JSON.');
+      return;
+    }
+    if (!Array.isArray(data.sessions) || !Array.isArray(data.kicks)) {
+      alert('Backup file is missing sessions or kicks arrays.');
+      return;
+    }
+    const replace = confirm(
+      `Import ${data.kicks.length} kick${data.kicks.length === 1 ? '' : 's'} and ${data.sessions.length} session${data.sessions.length === 1 ? '' : 's'}?\n\n` +
+      'OK = REPLACE everything you have now with this backup.\n' +
+      'Cancel = MERGE with what you have (skips duplicates).'
+    );
+    if (replace) {
+      writeSessions(data.sessions);
+      writeKicks(data.kicks);
+    } else {
+      const existingSessionIds = new Set(getAllSessions().map((s) => s.id));
+      const existingKickIds = new Set(getAllKicks().map((k) => k.id));
+      const newSessions = data.sessions.filter((s) => !existingSessionIds.has(s.id));
+      const newKicks = data.kicks.filter((k) => !existingKickIds.has(k.id));
+      writeSessions([...getAllSessions(), ...newSessions]);
+      writeKicks([...getAllKicks(), ...newKicks]);
+    }
+    cleanupEmptyFinishedSessions();
+    if (editingKickId) cancelEdit();
+    expandedSessionId = null;
+    renderAll();
+  };
+  reader.onerror = () => alert('Could not read the file.');
+  reader.readAsText(file);
+}
+
 function setEditMode(kickId) {
   editingKickId = kickId;
   const isEditing = kickId !== null;
@@ -382,6 +445,13 @@ function handleFinishSession() {
 cancelEditBtn.addEventListener('click', cancelEdit);
 startSessionBtn.addEventListener('click', handleStartSession);
 finishSessionBtn.addEventListener('click', handleFinishSession);
+
+document.getElementById('export-btn').addEventListener('click', exportAllData);
+document.getElementById('import-input').addEventListener('change', (event) => {
+  const file = event.target.files && event.target.files[0];
+  if (file) importAllData(file);
+  event.target.value = '';
+});
 
 function handleKickAction(event) {
   const deleteBtn = event.target.closest('.kick-delete');
