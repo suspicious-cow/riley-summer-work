@@ -117,4 +117,23 @@ function deleteKick(kickId) {
   return writeKicks(getAllKicks().filter((k) => k.id !== kickId));
 }
 
+function deleteSession(sessionId) {
+  writeSessions(getAllSessions().filter((s) => s.id !== sessionId));
+  writeKicks(getAllKicks().filter((k) => k.sessionId !== sessionId));
+  return { sessionId };
+}
+
+function cleanupEmptyFinishedSessions() {
+  const sessions = getAllSessions();
+  const kicks = getAllKicks();
+  const sessionsWithKicks = new Set(kicks.map((k) => k.sessionId).filter(Boolean));
+  const cleaned = sessions.filter(
+    (s) => s.finishedAt === null || sessionsWithKicks.has(s.id)
+  );
+  if (cleaned.length !== sessions.length) {
+    writeSessions(cleaned);
+  }
+}
+
 migrateIfNeeded();
+cleanupEmptyFinishedSessions();

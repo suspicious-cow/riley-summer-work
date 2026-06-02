@@ -241,6 +241,7 @@ function renderPastSessions() {
 
   const withCounts = sessions
     .map((s) => ({ session: s, summary: sessionSummary(s, allKicks) }))
+    .filter((row) => row.summary.count > 0)
     .sort((a, b) => (b.session.finishedAt || '').localeCompare(a.session.finishedAt || ''));
 
   if (withCounts.length === 0) {
@@ -290,6 +291,11 @@ function renderPastSessions() {
           nested.appendChild(kickLi);
         });
       li.appendChild(nested);
+
+      const footer = document.createElement('div');
+      footer.className = 'session-row-footer';
+      footer.innerHTML = `<button type="button" class="session-delete-btn" data-session-id="${session.id}">Delete Session</button>`;
+      li.appendChild(footer);
     }
 
     sessionListEl.appendChild(li);
@@ -302,6 +308,7 @@ function renderAll() {
   renderStats();
   renderActiveKicks();
   renderPastSessions();
+  renderDistanceChart();
 }
 
 function handleFieldChange(fieldData) {
@@ -369,7 +376,19 @@ function handleKickAction(event) {
   if (deleteBtn) {
     const kickId = deleteBtn.dataset.kickId;
     if (editingKickId === kickId) cancelEdit();
+    const kick = getAllKicks().find((k) => k.id === kickId);
+    const sessionId = kick && kick.sessionId;
     deleteKick(kickId);
+    if (sessionId) {
+      const session = getSessionById(sessionId);
+      if (session && session.finishedAt !== null) {
+        const remaining = getKicksForSession(sessionId);
+        if (remaining.length === 0) {
+          if (expandedSessionId === sessionId) expandedSessionId = null;
+          deleteSession(sessionId);
+        }
+      }
+    }
     renderAll();
     return true;
   }
@@ -385,6 +404,23 @@ kickList.addEventListener('click', handleKickAction);
 
 sessionListEl.addEventListener('click', (event) => {
   if (handleKickAction(event)) return;
+  const sessionDeleteBtn = event.target.closest('.session-delete-btn');
+  if (sessionDeleteBtn) {
+    const sessionId = sessionDeleteBtn.dataset.sessionId;
+    const summary = sessionSummary({ id: sessionId }, getAllKicks());
+    const msg = summary.count === 0
+      ? 'Delete this empty session?'
+      : `Delete this session and all ${summary.count} kick${summary.count === 1 ? '' : 's'} in it? This cannot be undone.`;
+    if (!confirm(msg)) return;
+    if (editingKickId) {
+      const editingKick = getAllKicks().find((k) => k.id === editingKickId);
+      if (editingKick && editingKick.sessionId === sessionId) cancelEdit();
+    }
+    deleteSession(sessionId);
+    if (expandedSessionId === sessionId) expandedSessionId = null;
+    renderAll();
+    return;
+  }
   const toggle = event.target.closest('.session-row-toggle');
   if (toggle) {
     const sessionId = toggle.dataset.sessionId;

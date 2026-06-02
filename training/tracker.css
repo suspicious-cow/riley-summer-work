@@ -1014,6 +1014,34 @@ footer a:hover { color: var(--gold); text-decoration: underline; }
   border-radius: 6px;
 }
 
+.session-row-footer {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.session-delete-btn {
+  background: transparent;
+  border: 1.5px solid var(--line);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.session-delete-btn:hover {
+  border-color: var(--bad);
+  color: var(--bad);
+  background: rgba(179, 38, 30, 0.05);
+}
+
 .session-row-date {
   font-family: "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.95rem;
@@ -1048,6 +1076,27 @@ footer a:hover { color: var(--gold); text-decoration: underline; }
   color: var(--muted);
   margin-left: 2px;
 }
+
+.chart-container {
+  position: relative;
+  height: 240px;
+}
+
+.chart-container canvas { display: block; max-width: 100%; }
+.chart-container canvas[hidden] { display: none; }
+
+.chart-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.chart-empty[hidden] { display: none; }
 
 #form-card[hidden],
 #active-kicks-card[hidden],
