@@ -1,11 +1,18 @@
 (function () {
-  const KICKS_KEY = 'riley-punt-tracker-kicks-v1';
-  const SESSIONS_KEY = 'riley-punt-tracker-sessions-v1';
+  const KICKS_KEY = 'punt-tracker-kicks-v1';
+  const LEGACY_KICKS_KEY = 'riley-punt-tracker-kicks-v1';
   const PUBLIC_STATS_FILE = 'public-stats.json';
 
   function safeParse(raw) {
     if (!raw) return null;
     try { return JSON.parse(raw); } catch (e) { return null; }
+  }
+
+  function readKicks() {
+    const fresh = safeParse(localStorage.getItem(KICKS_KEY));
+    if (Array.isArray(fresh) && fresh.length > 0) return fresh;
+    const legacy = safeParse(localStorage.getItem(LEGACY_KICKS_KEY));
+    return Array.isArray(legacy) ? legacy : null;
   }
 
   function computeFromKicks(kicks) {
@@ -26,8 +33,7 @@
   }
 
   function localStorageStats() {
-    const kicks = safeParse(localStorage.getItem(KICKS_KEY));
-    const stats = computeFromKicks(kicks);
+    const stats = computeFromKicks(readKicks());
     if (!stats) return null;
     return { source: 'live', lastUpdated: null, ...stats };
   }
